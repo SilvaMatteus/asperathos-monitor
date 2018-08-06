@@ -15,6 +15,7 @@
 
 import paramiko
 import time
+import subprocess
 
 from monitor.utils.monasca.connector import MonascaConnector
 from monitor.plugins.base import Plugin
@@ -117,16 +118,17 @@ class OSGeneric(Plugin):
     def monitoring_application(self):
         try:
             # First of all, a connection with the host is created.
-            conn = self._get_ssh_connection()
+            #conn = self._get_ssh_connection()
 
             """ The second step consists in execute the command to capture
                 the last log line from the log file using the connection
                 create below and saving the outputs. """
-            stdin , stdout, stderr = conn.exec_command(
-                                         "sudo tail -1 %s" % self.log_path)
+            #stdin , stdout, stderr = conn.exec_command(
+            #                             "sudo tail -1 %s" % self.log_path)
 
             # The last step is to actually publish using the captured log line
-            self._publish_metrics(stdout.read())
+            proc = subprocess.Popen(["sudo",  "tail", "-1", "%s" % self.log_path],stdout=subprocess.PIPE)
+            self._publish_metrics(proc.readline())
 
         except Exception as ex:
             print "Monitoring %s is not possible. \n\
