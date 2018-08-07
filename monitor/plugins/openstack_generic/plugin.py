@@ -128,7 +128,7 @@ class OSGeneric(Plugin):
 
             # The last step is to actually publish using the captured log line
             proc = subprocess.Popen(["sudo",  "tail", "-1", "%s" % self.log_path],stdout=subprocess.PIPE)
-            self._publish_metrics(proc.readline())
+            self._publish_metrics(proc.communicate()[0])
 
         except Exception as ex:
             print "Monitoring %s is not possible. \n\
